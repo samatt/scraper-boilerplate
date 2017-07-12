@@ -1,0 +1,28 @@
+scrape_info:
+  name: Sample scrape
+  url: http://google.com
+  local: True
+  user: ''
+  pass: ''
+log: True
+tail: True
+browser_params:
+    disable_flash: True
+    tp_cookies: never
+    save_cookies: False
+    donottrack: True
+    ghostery: False
+    https-everywhere: False
+    tracking-protection: False
+    bot_mitigation: False
+    headless: True
+    ua_string: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.74 Safari/537.36
+firebase:
+    apiKey: False
+    authDomain: False
+    databaseURL: False
+    projectId: False
+    storageBucket: False
+    messagingSenderId: False
+    userId : False
+    userPassword : False
