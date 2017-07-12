@@ -1,8 +1,7 @@
 import pyrebase
-import json
 from log import log
 from config import config
-from pprint import pprint
+
 
 class Firebase:
     def __init__(self):
@@ -15,4 +14,4 @@ class Firebase:
 
     def upload(self, data):
         result = self.db.child("scrapes").child(data["timestamp"]).set(data, self.user['idToken'])
-
+        log.info(result)

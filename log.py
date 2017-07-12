@@ -46,4 +46,5 @@ if log_to_terminal:
 def exc(e):
     return "%s <%s:%s> %s" % (sys.exc_info()[0].__name__, os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1], sys.exc_info()[2].tb_lineno, e)
 
+
 log.exc = exc

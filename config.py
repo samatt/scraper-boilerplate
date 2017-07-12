@@ -8,6 +8,7 @@ directories = [ os.path.dirname(__main__.__file__) if hasattr(__main__, '__file_
 
 directories = [directory for directory in directories if directory is not None]
 
+
 class Config(dict):
     def __init__(self, conf=None):
         self.conf = None
@@ -32,11 +33,14 @@ class Config(dict):
     def __missing__(self, key):
         raise ConfigError(key, self.conf)
 
+
 class ConfigError(Exception):
     def __init__(self, key, conf):
         self.key = key
         self.conf = conf
+
     def __str__(self):
         return repr("No '%s' in config (%s)" % (self.key, self.conf))
+
 
 config = Config()

@@ -1,19 +1,19 @@
 from selenium.webdriver import ActionChains
-from webdriver_extensions import scroll_down, scroll_down_full
+from webdriver_extensions import scroll_down
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Firebase import Firebase
 import firefoxUtils.deploy_firefox
 from log import log
+from config import config
 import os
 import json
 import time
 import random
-from settings import *
-from tasks import *
+from os import abspath, join, dirname
+from tasks import execute_tasks
 from datetime import datetime
 import pickle
 
@@ -22,6 +22,7 @@ DEFAULT_SLEEP = 3
 NUM_MOUSE_MOVES = 2
 RANDOM_SLEEP_LOW = 1
 RANDOM_SLEEP_HIGH = 7
+
 
 class Scraper:
     def __init__(self,
@@ -38,7 +39,7 @@ class Scraper:
         self.display_port = None
         self.firebase = Firebase()
         self.webdriver = self._init_browser()
-        self.output_path = abspath(join(dirname(__file__),'out',"{}-{}.json"))
+        self.output_path = abspath(join(dirname(__file__), 'out', '{}-{}.json'))
 
     def _init_browser(self):
         driver, browser_profile_path, profile_settings = \
@@ -65,7 +66,7 @@ class Scraper:
             log.error(e)
 
     def get_website(self, url=None):
-        log.info('get_website %s'%url)
+        log.info('get_website %s' % url)
         main_handle = self.webdriver.current_window_handle
         try:
             if url:
@@ -122,17 +123,19 @@ class Scraper:
             except MoveTargetOutOfBoundsException:
                 num_fails += 1
                 self.log.warning("Mouse movement out of bounds,"
-                                    "trying a different offset...")
+                                 "trying a different offset...")
 
         # bot mitigation 2: scroll in random intervals down page
         scroll_down(self.webdriver)
 
         # mitigation 3: randomly wait so that page visits appear irregularly
         time.sleep(random.randrange(RANDOM_SLEEP_LOW, RANDOM_SLEEP_HIGH))
+
     def save(self):
         if self.scraped:
-            name = "%s-%s"%(config['scrape_info']['name'], self.user) if self.user else config['scrape_info']['name']
-            with open(OUTPUT.format(name, datetime.now().strftime("%Y-%m-%d %H:%M")), 'w') as outfile:
+            name = "%s-%s" % (config['scrape_info']['name'], self.user) if self.user else config['scrape_info']['name']
+
+            with open(self.output_path.format(name, datetime.now().strftime("%Y-%m-%d %H:%M")), 'w') as outfile:
                 json.dump(self.scraped, outfile)
 
     def __enter__(self):
@@ -140,7 +143,7 @@ class Scraper:
 
     def __exit__(self, exc_type, exc_value, traceback):
         if self.webdriver:
-            pickle.dump( self.webdriver.get_cookies() , open("cookies.pkl","wb"))
+            pickle.dump( self.webdriver.get_cookies(), open("cookies.pkl", "wb"))
             self.webdriver.quit()
 
         if self.scraped and self.save_local:
@@ -157,7 +160,7 @@ class Scraper:
                 pass
             except TypeError:
                 log.error(" PID may not be the correct type %s" %
-                                  (str(self.display_pid)))
+                           (str(self.display_pid)))
 
         if self.display_port is not None:  # xvfb diplay lock
             try:
