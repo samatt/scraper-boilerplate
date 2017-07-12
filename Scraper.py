@@ -12,7 +12,7 @@ import os
 import json
 import time
 import random
-from os import abspath, join, dirname
+from os.path import abspath, join, dirname
 from tasks import execute_tasks
 from datetime import datetime
 import pickle
