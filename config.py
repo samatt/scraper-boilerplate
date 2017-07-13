@@ -16,7 +16,6 @@ class Config(dict):
         while conf is None or not os.path.isfile(conf):
             conf = os.path.abspath(os.path.join(directories[i], "config.yaml"))
             smp = os.path.abspath(os.path.join(directories[i], "config.yaml.smp"))
-            print(conf)
             if not os.path.isfile(conf) and os.path.isfile(smp):
                 shutil.copyfile(smp, conf)
             i += 1
@@ -44,3 +43,7 @@ class ConfigError(Exception):
 
 
 config = Config()
+if config['scrape_info']['local']:
+    logdir = os.path.abspath(os.path.join(os.path.dirname(__file__), config['output-folder']))
+    if not os.path.isdir(logdir):
+        os.makedirs(logdir)
