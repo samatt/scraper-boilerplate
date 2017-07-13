@@ -66,9 +66,8 @@ def deploy_firefox( browser_params):
 
     # Configure privacy settings
     firefoxUtils.configure_firefox.privacy(browser_params, fp, "", "")
-
-    # Set various prefs to improve speed and eliminate traffic to Mozilla
     firefoxUtils.configure_firefox.optimize_prefs(fp)
+    firefoxUtils.configure_firefox.save_file_prefs(fp)
 
     # Launch the webdriver
     # if platform.system() == "Darwin":

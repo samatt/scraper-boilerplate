@@ -1,3 +1,4 @@
+import os, json, time, random, pickle, firefoxUtils.deploy_firefox, signal
 from selenium.webdriver import ActionChains
 from webdriver_extensions import scroll_down
 from selenium.common.exceptions import TimeoutException
@@ -5,17 +6,12 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Firebase import Firebase
-import firefoxUtils.deploy_firefox
 from log import log
+from s3 import upload_strings
 from config import config
-import os
-import json
-import time
-import random
 from os.path import abspath, join, dirname
 from tasks import execute_tasks
 from datetime import datetime
-import pickle
 
 SELECTORS = {}
 DEFAULT_SLEEP = 3
@@ -38,8 +34,8 @@ class Scraper:
         self.display_pid = None
         self.display_port = None
         self.firebase = Firebase()
+        self.timestamp = ''
         self.webdriver = self._init_browser()
-        self.output_path = abspath(join(dirname(__file__), 'out', '{}-{}.json'))
 
     def _init_browser(self):
         driver, browser_profile_path, profile_settings = \
@@ -53,12 +49,13 @@ class Scraper:
 
     def run(self):
         try:
+            self.timestamp = datetime.now().strftime("%Y-%m-%d")
             self.get_website(config['scrape_info']['url'])
             if config['browser_params']['save_cookies']:
                 self.add_cookies()
 
-            execute_tasks(self.webdriver, self.user, self.passwd)
-
+            result = execute_tasks(self.webdriver, self.user, self.passwd)
+            self.save_html()
             # if not self.save_local:
             #     self.firebase.upload(self.scraped)
         except Exception as e:
@@ -131,26 +128,23 @@ class Scraper:
         # mitigation 3: randomly wait so that page visits appear irregularly
         time.sleep(random.randrange(RANDOM_SLEEP_LOW, RANDOM_SLEEP_HIGH))
 
-    def save(self):
-        if self.scraped:
-            name = "%s-%s" % (config['scrape_info']['name'], self.user) if self.user else config['scrape_info']['name']
+    def save_html(self):
+        filename = "%s-%s-%s.html" % (config['scrape_info']['name'], self.timestamp, self.user) if self.user else "%s-%s.html" % (config['scrape_info']['name'], self.timestamp)
+        src = self.webdriver.execute_script('return document.documentElement.innerHTML')
 
-            with open(self.output_path.format(name, datetime.now().strftime("%Y-%m-%d %H:%M")), 'w') as outfile:
-                json.dump(self.scraped, outfile)
+        if self.save_local:
+            with open(os.path.join(config['output-folder'], filename), 'w') as outfile:
+                outfile.write(src)
+        else:
+            upload_strings(src, filename)
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         if self.webdriver:
-            pickle.dump( self.webdriver.get_cookies(), open("cookies.pkl", "wb"))
+            pickle.dump(self.webdriver.get_cookies(), open("cookies.pkl", "wb"))
             self.webdriver.quit()
-
-        if self.scraped and self.save_local:
-            try:
-                self.save()
-            except Exception as e:
-                log.error(e)
 
         if self.display_pid is not None:
             try:
@@ -160,7 +154,7 @@ class Scraper:
                 pass
             except TypeError:
                 log.error(" PID may not be the correct type %s" %
-                           (str(self.display_pid)))
+                          (str(self.display_pid)))
 
         if self.display_port is not None:  # xvfb diplay lock
             try:

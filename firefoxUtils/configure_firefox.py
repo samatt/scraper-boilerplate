@@ -2,6 +2,7 @@
 import shutil
 import sys
 import os
+# from ..config import config
 
 def privacy(browser_params, fp, root_dir, browser_profile_path):
     """
@@ -49,6 +50,24 @@ def privacy(browser_params, fp, root_dir, browser_profile_path):
         fp.set_preference("extensions.https_everywhere.toolbar_hint_shown", True)
         fp.set_preference("extensions.https_everywhere._observatory.popup_shown", True)
         fp.set_preference("extensions.https_everywhere._observatory.clean_config", True)
+
+
+def save_file_prefs(fp):
+    fp.set_preference("browser.download.folderList", 0)
+    fp.set_preference("browser.download.manager.showWhenStarting", False)
+    # fp.set_preference("browser.download.dir", downloadPath)
+    fp.set_preference("browser.helperApps.neverAsk.openFile", "application/excel")
+    fp.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/excel")
+    fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+    fp.set_preference("browser.download.manager.showAlertOnComplete", False)
+    fp.set_preference("browser.download.manager.closeWhenDone", False)
+    # fp.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/csv')
+    # fp.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream")
+    # fp.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/csv")
+    # fp.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/excel')
+    # fp.set_preference('browser.download.folderList', 0) # https://www.lifewire.com/firefox-about-config-entry-browser-445707
+    # fp.set_preference('browser.download.manager.showWhenStarting', False)
+    # fp.set_preference('browser.download.dir', config['output-folder'])
 
 
 
