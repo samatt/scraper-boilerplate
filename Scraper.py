@@ -163,5 +163,5 @@ class Scraper:
                 log.debug("Screen lockfile already removed")
                 pass
 
-        os.system("killall -9 firefox-bin")
+        os.system("killall -9 firefox")
         os.system("killall -9 Xvfb")
