@@ -2,10 +2,16 @@ scrape_info:
   name: Sample scrape
   url: http://google.com
   local: True
+  save-html: False
   user: ''
   pass: ''
+s3:
+  access_key_id:
+  secret_access_key:
+  bucket: spdstore
 log: True
 tail: True
+output-folder: output
 browser_params:
     disable_flash: True
     tp_cookies: never
