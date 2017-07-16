@@ -10,7 +10,7 @@ from log import log
 from s3 import upload_strings
 from config import config
 from os.path import abspath, join, dirname
-from tasks import execute_tasks
+from scrape_tasks import execute_tasks
 from datetime import datetime
 
 SELECTORS = {}
@@ -21,16 +21,13 @@ RANDOM_SLEEP_HIGH = 7
 
 
 class Scraper:
-    def __init__(self,
-                 user='',
-                 passwd='',
-                 save_local=False):
-        self.user = user
-        self.passwd = passwd
+    def __init__(self):
+        self.user = config['scrape_info']['user']
+        self.passwd = config['scrape_info']['pass']
         self.scraped = {}
-        if save_local:
+        if config['scrape_info']['local']:
             log.info('Saving data locally.')
-        self.save_local = save_local
+        self.save_local = config['scrape_info']['local']
         self.display_pid = None
         self.display_port = None
         self.firebase = Firebase()
@@ -137,6 +134,9 @@ class Scraper:
                 outfile.write(src)
         else:
             upload_strings(src, filename)
+
+    def save_json(self):
+        pass
 
     def __enter__(self):
         return self
