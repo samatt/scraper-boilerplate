@@ -46,6 +46,7 @@ class Scraper:
 
     def run(self):
         try:
+            log.info('Starting Scrape')
             self.timestamp = datetime.now().strftime("%Y-%m-%d")
             self.get_website(config['scrape_info']['url'])
             if config['browser_params']['save_cookies']:

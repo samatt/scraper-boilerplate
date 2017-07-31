@@ -32,8 +32,7 @@ def nav_sign_in(webdriver, user, passwd):
     password_value = 'password'
     username_selector = 'input[%s^="%s"]' % (attr, username_value)
     password_selector = 'input[%s^="%s"]' % (attr, password_value)
-    # submit_selector = 'button[type^="submit"]'
-    submit_selector = 'button'
+    submit_selector = 'button[type^="submit"]'
 
     if webdriver.find_elements(By.CSS_SELECTOR, username_selector):
         webdriver.find_element(By.CSS_SELECTOR, username_selector).\
