@@ -67,7 +67,7 @@ class Parser:
         for key, body in data:
             scrape_date = re.search('(\d{4}-\d{2}-\d{2})', key)
             if config['today_only']:
-                if scrape_date == datetime.now().strftime('%m-%d-%Y'):
+                if scrape_date.group(1) == datetime.now().strftime('%Y-%m-%d'):
                     log.info('Only parsing scrapes from today')
                     scrapes.append({'date': scrape_date.group(1), 'raw': body})
             else:
